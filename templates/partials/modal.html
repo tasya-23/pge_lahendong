@@ -1,0 +1,50 @@
+<!-- Modal Detail -->
+    <div class="modal-bg" id="modal-bg" onclick="closeModal(event)">
+      <div class="modal">
+        <div class="mh">
+          <div>
+            <h2 id="m-nama">—</h2>
+            <p id="m-divisi">—</p>
+          </div>
+          <button class="mc-btn" onclick="closeModalDirect()">✕</button>
+        </div>
+        <div class="ms">
+          <div class="ms-box g">
+            <div class="v" id="m-hadir">—</div>
+            <div class="l">Hadir</div>
+          </div>
+          <div class="ms-box y">
+            <div class="v" id="m-lambat">—</div>
+            <div class="l">Terlambat</div>
+          </div>
+          <div class="ms-box r">
+            <div class="v" id="m-tidak">—</div>
+            <div class="l">Tidak Hadir</div>
+          </div>
+        </div>
+        <div class="ms-extra">
+          <span>Total Jam Kerja: <strong id="m-total-jam">—</strong></span>
+          <span>Rata-rata Jam/Hari: <strong id="m-avg-jam">—</strong></span>
+        </div>
+        <div class="mb">
+          <p style="font-size: 12px; color: var(--mut); margin-bottom: 10px">
+            📋 Detail absensi harian
+          </p>
+          <div class="tbl-wrap" style="max-height: 340px">
+            <table>
+              <thead>
+                <tr>
+                  <th>Tanggal</th>
+                  <th>Hari</th>
+                  <th>Jam Masuk</th>
+                  <th>Jam Keluar</th>
+                  <th>Jam Kerja</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="m-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>

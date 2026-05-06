@@ -1,0 +1,78 @@
+<!-- ══ RANKING PAGE ══ -->
+      <div class="page" id="page-rank">
+        <div class="period-bar">
+          <div>
+            <h1>Ranking Kehadiran</h1>
+            <p id="rank-periode">—</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px">
+            <label style="font-size: 13px; font-weight: 600; color: var(--mut)"
+              >Tampilkan:</label
+            >
+            <select
+              id="rank-top"
+              onchange="loadRanking()"
+              style="
+                padding: 6px 24px 6px 10px;
+                border: 1.5px solid var(--bor);
+                border-radius: 8px;
+                font-size: 13px;
+                font-weight: 600;
+                font-family: inherit;
+                background: var(--wh);
+                cursor: pointer;
+                outline: none;
+              "
+            >
+              <option value="10">Top 10</option>
+              <option value="20">Top 20</option>
+              <option value="50">Top 50</option>
+              <option value="999">Semua</option>
+            </select>
+          </div>
+        </div>
+        <div class="two-col">
+          <div class="card">
+            <div class="ch">
+              <h3>🏆 Ranking Kehadiran</h3>
+              <span class="cb-badge" id="cb-rank">—</span>
+            </div>
+            <div class="rank-list" id="rank-list"></div>
+          </div>
+          <div class="card">
+            <div class="ch">
+              <h3>⚠️ Perhatian Khusus</h3>
+              <span class="cb-badge" id="cb-warn">—</span>
+            </div>
+            <div style="padding: 8px 0">
+              <div
+                style="
+                  padding: 5px 17px 3px;
+                  font-size: 10px;
+                  font-weight: 700;
+                  color: var(--mut);
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                "
+              >
+                🔴 Paling Sering Tidak Hadir
+              </div>
+              <div id="warn-tidak" class="rank-list"></div>
+              <div
+                style="
+                  padding: 10px 17px 3px;
+                  font-size: 10px;
+                  font-weight: 700;
+                  color: var(--mut);
+                  text-transform: uppercase;
+                  letter-spacing: 0.5px;
+                  border-top: 1px solid var(--bor);
+                "
+              >
+                🟡 Paling Sering Terlambat
+              </div>
+              <div id="warn-lambat" class="rank-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>

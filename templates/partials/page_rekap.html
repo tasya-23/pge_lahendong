@@ -1,0 +1,62 @@
+<!-- ══ REKAP PAGE ══ -->
+      <div class="page" id="page-rekap">
+        <div class="period-bar">
+          <div>
+            <h1>Rekap Per Karyawan</h1>
+            <p id="rekap-periode">—</p>
+          </div>
+        </div>
+        <div class="filter-bar">
+          <div class="fg">
+            <label>📅 Bulan:</label>
+            <select id="rf-bulan" onchange="applyFilter()">
+              <option value="0">Semua Bulan</option>
+            </select>
+          </div>
+          <div class="fdiv"></div>
+          <div class="fg">
+            <label>📆 Tahun:</label>
+            <select id="rf-tahun" onchange="applyFilter()">
+              <option value="0">Semua Tahun</option>
+            </select>
+          </div>
+          <div class="fdiv" id="rfdiv-dept"></div>
+          <div class="fg" id="rfg-dept">
+            <label>🏭 Divisi:</label>
+            <select id="rf-dept" onchange="applyFilter()">
+              <option value="">Semua Divisi</option>
+            </select>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch">
+            <h3>Tabel Rekap Absensi</h3>
+            <span class="cb-badge" id="cb-tbl">—</span>
+          </div>
+          <div class="tbl-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No</th>
+                  <th>ID</th>
+                  <th>Nama</th>
+                  <th>Divisi</th>
+                  <th>Hadir</th>
+                  <th>Terlambat</th>
+                  <th>Tidak Hadir</th>
+                  <th>Total Jam</th>
+                  <th>Avg Jam/Hari</th>
+                  <th>Detail</th>
+                </tr>
+              </thead>
+              <tbody id="rekap-body">
+                <tr>
+                  <td colspan="10" class="empty">
+                    <span class="ico">📊</span>Memuat data...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>

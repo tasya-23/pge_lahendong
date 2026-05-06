@@ -1,0 +1,134 @@
+<!-- ══ UPLOAD PAGE ══ -->
+      <div class="page" id="page-upload">
+        <div class="up-header">
+          <h1>Upload Data Absensi</h1>
+          <p>
+            Upload 2 file berikut. File master hanya perlu diupload sekali. File
+            absensi diupload tiap bulan.
+          </p>
+        </div>
+        <div class="up-grid">
+          <!-- File Absensi -->
+          <div class="up-box" id="box-ab">
+            <div class="up-box-head">
+              <div class="up-box-icon" style="background: var(--gp)">📥</div>
+              <div class="up-box-info">
+                <h3>File Absensi Mesin</h3>
+                <p>
+                  Export CSV/Excel dari fingerprint/card reader — upload tiap
+                  bulan
+                </p>
+              </div>
+              <span class="up-status" id="st-ab">Belum ada</span>
+            </div>
+            <div class="up-box-body">
+              <div
+                style="
+                  font-size: 11.5px;
+                  color: var(--mut);
+                  margin-bottom: 11px;
+                "
+              >
+                Kolom:
+                <strong>Person ID · Name · Time · Attendance Status</strong>
+              </div>
+              <div class="up-result" id="res-ab"></div>
+              <div class="up-err" id="err-ab"></div>
+              <label class="drop-label" id="lbl-ab">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                <span id="lbl-ab-txt"
+                  >Klik atau drag file CSV / Excel di sini</span
+                >
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  id="file-ab"
+                  style="display: none"
+                  onchange="uploadAbsensi(this.files[0])"
+                />
+              </label>
+            </div>
+          </div>
+          <!-- Master Karyawan -->
+          <div class="up-box" id="box-mk">
+            <div class="up-box-head">
+              <div class="up-box-icon" style="background: var(--acl)">👥</div>
+              <div class="up-box-info">
+                <h3>Master Karyawan (master.xlsx)</h3>
+                <p>
+                  Berisi akun login + divisi karyawan — upload sekali, update
+                  jika ada perubahan
+                </p>
+              </div>
+              <span class="up-status" id="st-mk">Belum ada</span>
+            </div>
+            <div class="up-box-body">
+              <div
+                style="
+                  font-size: 11.5px;
+                  color: var(--mut);
+                  margin-bottom: 11px;
+                "
+              >
+                Kolom:
+                <strong
+                  >ID_Karyawan · Nama · Divisi · Username · Password ·
+                  Role</strong
+                >
+              </div>
+              <div class="up-result acc" id="res-mk"></div>
+              <div class="up-err" id="err-mk"></div>
+              <label class="drop-label" id="lbl-mk">
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                <span id="lbl-mk-txt">Klik atau drag master.xlsx di sini</span>
+                <input
+                  type="file"
+                  accept=".xlsx,.xls,.csv"
+                  id="file-mk"
+                  style="display: none"
+                  onchange="uploadMaster(this.files[0])"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+        <div class="up-cta">
+          <button
+            id="btn-go-dash"
+            class="btn btn-green"
+            style="
+              padding: 11px 34px;
+              font-size: 15px;
+              opacity: 0.4;
+              pointer-events: none;
+            "
+            onclick="goDash()"
+          >
+            Lihat Dashboard →
+          </button>
+          <div
+            id="txt-go"
+            style="margin-top: 7px; font-size: 12px; color: var(--mut)"
+          >
+            Upload file absensi terlebih dahulu
+          </div>
+        </div>
+      </div>

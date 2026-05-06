@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login — PGE Lahendong</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/main.css" />
+  </head>
+  <body
+    style="
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--bg);
+    "
+  >
+    <div
+      style="
+        background: #fff;
+        border-radius: 16px;
+        padding: 40px 36px;
+        width: 100%;
+        max-width: 380px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <div style="text-align: center; margin-bottom: 28px">
+        <!-- LOGO -->
+        <img
+          src="/static/images/lahendong.png"
+          alt="Logo PGE"
+          style="width: 70px; margin-bottom: 10px"
+        />
+
+        <div
+          style="
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--mut);
+            text-transform: uppercase;
+          "
+        >
+          PT Pertamina Geothermal Energy
+        </div>
+        <div
+          style="
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--gd);
+            margin-top: 4px;
+          "
+        >
+          Area Lahendong
+        </div>
+        <div style="font-size: 13px; color: var(--mut); margin-top: 4px">
+          Dashboard Monitoring Absensi
+        </div>
+      </div>
+      <div
+        id="err"
+        style="
+          display: none;
+          background: var(--dal);
+          color: var(--dan);
+          padding: 10px 13px;
+          border-radius: 8px;
+          font-size: 13px;
+          font-weight: 600;
+          margin-bottom: 14px;
+        "
+      ></div>
+      <div style="margin-bottom: 14px">
+        <label
+          style="
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--mut);
+            display: block;
+            margin-bottom: 5px;
+          "
+          >USERNAME</label
+        >
+        <input
+          id="username"
+          type="text"
+          placeholder="Masukkan username"
+          style="
+            width: 100%;
+            padding: 10px 13px;
+            border: 1.5px solid var(--bor);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+          "
+          onkeydown="if(event.key==='Enter')doLogin()"
+        />
+      </div>
+      <div style="margin-bottom: 20px">
+        <label
+          style="
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--mut);
+            display: block;
+            margin-bottom: 5px;
+          "
+          >PASSWORD</label
+        >
+        <input
+          id="password"
+          type="password"
+          placeholder="Masukkan password"
+          style="
+            width: 100%;
+            padding: 10px 13px;
+            border: 1.5px solid var(--bor);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+          "
+          onkeydown="if(event.key==='Enter')doLogin()"
+        />
+      </div>
+      <button
+        onclick="doLogin()"
+        style="
+          width: 100%;
+          padding: 11px;
+          background: var(--g);
+          color: #fff;
+          border: none;
+          border-radius: 9px;
+          font-size: 15px;
+          font-weight: 700;
+          cursor: pointer;
+          font-family: inherit;
+        "
+      >
+        Masuk →
+      </button>
+    </div>
+    <script>
+      async function doLogin() {
+        const u = document.getElementById("username").value.trim();
+        const p = document.getElementById("password").value;
+        const err = document.getElementById("err");
+        if (!u || !p) {
+          err.textContent = "Username dan password wajib diisi";
+          err.style.display = "block";
+          return;
+        }
+        try {
+          const r = await fetch("/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: u, password: p }),
+          });
+          const data = await r.json();
+          if (data.success) {
+            window.location.href = "/";
+          } else {
+            err.textContent = data.error || "Login gagal";
+            err.style.display = "block";
+          }
+        } catch (e) {
+          err.textContent = "Gagal terhubung ke server";
+          err.style.display = "block";
+        }
+      }
+    </script>
+  </body>
+</html>

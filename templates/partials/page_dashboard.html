@@ -1,0 +1,394 @@
+<!-- ══ DASHBOARD PAGE ══ -->
+<div class="page" id="page-dash">
+  <div class="period-bar">
+    <div>
+      <h1>Dashboard Monitoring Absensi</h1>
+      <p id="dash-periode">—</p>
+    </div>
+    <div class="period-btns">
+      <a id="btn-excel2" class="btn btn-ghost" href="#">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" /></svg
+        >Excel
+      </a>
+      <a id="btn-pdf2" class="btn btn-green" href="#">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" /></svg
+        >PDF
+      </a>
+    </div>
+  </div>
+
+  <!-- Filter -->
+  <div class="filter-bar">
+    <div class="fg">
+      <label>📅 Bulan:</label>
+      <select id="f-bulan" onchange="applyFilter()">
+        <option value="0">Semua Bulan</option>
+      </select>
+    </div>
+    <div class="fdiv"></div>
+    <div class="fg">
+      <label>📆 Tahun:</label>
+      <select id="f-tahun" onchange="applyFilter()">
+        <option value="0">Semua Tahun</option>
+      </select>
+    </div>
+    <div class="fdiv" id="fdiv-dept"></div>
+    <div class="fg" id="fg-dept">
+      <label>🏭 Divisi:</label>
+      <select id="f-dept" onchange="applyFilter()">
+        <option value="">Semua Divisi</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="stats-row">
+    <div class="sc g">
+      <div class="sc-ic">👥</div>
+      <div class="sc-lbl">Total Karyawan</div>
+      <div class="sc-val" id="sv-kar">—</div>
+      <div class="sc-sub">Aktif periode ini</div>
+    </div>
+    <div class="sc b">
+      <div class="sc-ic">📅</div>
+      <div class="sc-lbl">Hari Kerja</div>
+      <div class="sc-val" id="sv-hk">—</div>
+      <div class="sc-sub">Senin–Jumat</div>
+    </div>
+    <div class="sc p">
+      <div class="sc-ic">✅</div>
+      <div class="sc-lbl">Total Hadir</div>
+      <div class="sc-val" id="sv-hadir">—</div>
+      <div class="sc-sub" id="sv-hadir-pct">—</div>
+    </div>
+    <div class="sc y">
+      <div class="sc-ic">⏰</div>
+      <div class="sc-lbl">Terlambat</div>
+      <div class="sc-val" id="sv-lambat">—</div>
+      <div class="sc-sub" id="sv-lambat-pct">—</div>
+    </div>
+    <div class="sc r">
+      <div class="sc-ic">❌</div>
+      <div class="sc-lbl">Tidak Hadir</div>
+      <div class="sc-val" id="sv-tidak">—</div>
+      <div class="sc-sub" id="sv-tidak-sub">—</div>
+    </div>
+  </div>
+  <!-- Jam kerja card -->
+  <div
+    style="
+      background: var(--wh);
+      border: 1px solid var(--bor);
+      border-radius: var(--rad);
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    "
+  >
+    <div
+      style="
+        width: 38px;
+        height: 38px;
+        border-radius: 9px;
+        background: var(--pul);
+        display: grid;
+        place-items: center;
+        font-size: 16px;
+        flex-shrink: 0;
+      "
+    >
+      🕐
+    </div>
+    <div>
+      <div
+        style="
+          font-size: 10.5px;
+          font-weight: 700;
+          color: var(--mut);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        "
+      >
+        Total Jam Kerja Tercatat (bulan ini)
+      </div>
+      <div
+        style="
+          font-size: 22px;
+          font-weight: 800;
+          font-family: 'DM Mono', monospace;
+          color: var(--pur);
+        "
+        id="sv-jam"
+      >
+        —
+      </div>
+    </div>
+    <div
+      style="
+        font-size: 12px;
+        color: var(--mut);
+        margin-left: auto;
+        text-align: right;
+        line-height: 1.6;
+      "
+    >
+      Dihitung dari selisih<br />check-in & check-out tercatat
+    </div>
+  </div>
+
+  <!-- ══ SECTION KHUSUS USER — Trend Kehadiran Pribadi ══ -->
+  <!-- Ditampilkan hanya untuk role user via JS (applyUserFilter) -->
+  <div id="user-trend-section" style="display:none">
+
+    <!-- Trend Kehadiran Harian -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="ch" style="justify-content:space-between">
+        <div>
+          <h3>📈 Trend Kehadiran Harian</h3>
+          <p style="font-size:11px;color:var(--mut);margin-top:2px">Hari mana kamu sering terlambat</p>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;font-size:11px;color:var(--mut)">
+          <span style="display:flex;align-items:center;gap:4px">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--g);display:inline-block"></span>Hadir
+          </span>
+          <span style="display:flex;align-items:center;gap:4px">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--acc);display:inline-block"></span>Terlambat
+          </span>
+          <span style="display:flex;align-items:center;gap:4px">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--dan);display:inline-block"></span>Tidak Hadir
+          </span>
+        </div>
+      </div>
+      <div class="cb">
+        <div class="chart-wrap" style="height:160px"><canvas id="chartTrend"></canvas></div>
+      </div>
+    </div>
+
+    <!-- Jam Masuk + Ringkasan side by side -->
+    <div class="two-col" style="margin-bottom:16px">
+
+      <!-- Jam masuk per hari -->
+      <div class="card">
+        <div class="ch">
+          <div>
+            <h3>⏱ Jam Masuk per Hari</h3>
+            <p style="font-size:11px;color:var(--mut);margin-top:2px">
+              Garis merah = batas masuk (<span id="trend-batas-jam">08:00</span>)
+            </p>
+          </div>
+        </div>
+        <div class="cb">
+          <div class="chart-wrap" style="height:160px"><canvas id="chartJamMasuk"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Ketepatan waktu donut + ringkasan -->
+      <div class="card">
+        <div class="ch"><h3>✅ Ketepatan Waktu</h3></div>
+        <div class="cb" style="display:flex;flex-direction:column;gap:14px">
+
+          <!-- donut + progress -->
+          <div style="display:flex;align-items:center;gap:16px">
+            <div style="position:relative;width:72px;height:72px;flex-shrink:0">
+              <canvas id="chartKetepatan" width="72" height="72"></canvas>
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;pointer-events:none">
+                <span style="font-size:15px;font-weight:800;font-family:'DM Mono',monospace;color:var(--g)" id="kt-pct">—</span>
+                <span style="font-size:9px;color:var(--mut)">tepat</span>
+              </div>
+            </div>
+            <div style="flex:1">
+              <div style="font-size:11.5px;color:var(--t2);margin-bottom:4px">Tepat waktu</div>
+              <div class="pb-track" style="margin-bottom:8px">
+                <div class="pb-fill" id="kt-bar-tepat" style="width:0%;background:var(--g)"></div>
+              </div>
+              <div style="font-size:11.5px;color:var(--t2);margin-bottom:4px">Terlambat</div>
+              <div class="pb-track">
+                <div class="pb-fill" id="kt-bar-lambat" style="width:0%;background:var(--acc)"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Statistik kecil -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;border-top:1px solid var(--bor);padding-top:12px">
+            <div style="text-align:center">
+              <div style="font-size:18px;font-weight:800;font-family:'DM Mono',monospace;color:var(--g)" id="kt-tepat">—</div>
+              <div style="font-size:10px;color:var(--mut)">Tepat waktu</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:18px;font-weight:800;font-family:'DM Mono',monospace;color:var(--acc)" id="kt-lambat">—</div>
+              <div style="font-size:10px;color:var(--mut)">Terlambat</div>
+            </div>
+            <div style="text-align:center">
+              <div style="font-size:18px;font-weight:800;font-family:'DM Mono',monospace;color:var(--dan)" id="kt-absen">—</div>
+              <div style="font-size:10px;color:var(--mut)">Tidak hadir</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Absensi Terakhir (5 hari) -->
+    <div class="card" style="margin-bottom:16px">
+      <div class="ch">
+        <h3>📋 Absensi Terakhir</h3>
+        <span class="cb-badge" id="cb-trend-count">—</span>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Hari</th>
+              <th>Jam Masuk</th>
+              <th>Jam Keluar</th>
+              <th>Jam Kerja</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="trend-table-body">
+            <tr><td colspan="6" class="empty">Memuat data...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+  <!-- /user-trend-section -->
+
+
+  <!-- Charts row — disembunyikan untuk role user -->
+  <div class="two-col" id="admin-charts-row">
+    <div class="card">
+      <div class="ch">
+        <h3>Grafik Kehadiran</h3>
+        <span class="cb-badge" id="cb-pie">—</span>
+      </div>
+      <div class="cb" style="display: flex; gap: 18px; align-items: center">
+        <div
+          style="
+            width: 175px;
+            height: 175px;
+            flex-shrink: 0;
+            position: relative;
+          "
+        >
+          <canvas id="chartPie"></canvas>
+          <div
+            style="
+              position: absolute;
+              inset: 0;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              pointer-events: none;
+            "
+          >
+            <span
+              style="
+                font-size: 20px;
+                font-weight: 800;
+                font-family: 'DM Mono', monospace;
+                color: var(--g);
+              "
+              id="pie-center"
+              >—</span
+            >
+            <span style="font-size: 10px; font-weight: 600; color: var(--mut)"
+              >Hadir</span
+            >
+          </div>
+        </div>
+        <div style="flex: 1">
+          <div class="pb-row">
+            <div class="pb-lbl">Hadir</div>
+            <div class="pb-track">
+              <div
+                class="pb-fill"
+                id="pb-hadir"
+                style="width: 0%; background: var(--g)"
+              ></div>
+            </div>
+            <div class="pb-val" id="pb-hadir-v">0%</div>
+          </div>
+          <div class="pb-row">
+            <div class="pb-lbl">Terlambat</div>
+            <div class="pb-track">
+              <div
+                class="pb-fill"
+                id="pb-lambat"
+                style="width: 0%; background: var(--acc)"
+              ></div>
+            </div>
+            <div class="pb-val" id="pb-lambat-v">0%</div>
+          </div>
+          <div class="pb-row">
+            <div class="pb-lbl">Tidak Hadir</div>
+            <div class="pb-track">
+              <div
+                class="pb-fill"
+                id="pb-tidak"
+                style="width: 0%; background: var(--dan)"
+              ></div>
+            </div>
+            <div class="pb-val" id="pb-tidak-v">0%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <h3>Distribusi Status</h3>
+        <span class="cb-badge" id="cb-bar">—</span>
+      </div>
+      <div class="cb">
+        <div class="chart-wrap"><canvas id="chartBar"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dept chart + table — disembunyikan untuk role user -->
+  <div class="three-col three-col-rekap" id="admin-dept-row">
+    <div class="card card-rekap">
+      <div class="ch"><h3>Rekap per Divisi</h3></div>
+
+      <!-- TAMBAHAN: wrapper scroll -->
+      <div class="cb" style="padding: 10px">
+        <div class="tbl-wrap">
+          <div id="divisiTable"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ch">
+        <h3>Grafik per Divisi</h3>
+        <span class="cb-badge" id="cb-dept">—</span>
+      </div>
+      <div class="cb">
+        <div class="chart-wrap" style="height: 230px">
+          <canvas id="chartDept"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /page-dash -->
+</div>

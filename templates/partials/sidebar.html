@@ -1,0 +1,66 @@
+<!-- Sidebar -->
+    <aside class="sb">
+      <div class="sb-logo">
+        <div class="t">PT Pertamina Geothermal</div>
+        <h2>PGE Lahendong<span class="dot"></span></h2>
+      </div>
+      <nav class="sb-nav">
+        <div class="ns">Menu</div>
+        <button class="ni active" id="nb-dash" onclick="switchPage('dash')">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+          </svg>
+          Dashboard
+        </button>
+        <button class="ni" id="nb-rekap" onclick="switchPage('rekap')">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M9 11l3 3L22 4" />
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" />
+          </svg>
+          Rekap Karyawan
+        </button>
+        <button class="ni" id="nb-rank" onclick="switchPage('rank')">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+          </svg>
+          Ranking
+        </button>
+        <div class="ns" id="nb-upload-section">Upload</div>
+        <button class="ni" id="nb-upload" onclick="switchPage('upload')">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          Upload Data
+        </button>
+      </nav>
+      <div class="sb-user">
+        <div class="ru">Login sebagai</div>
+        <div class="rn" id="sb-nama">—</div>
+        <span class="rb" id="sb-role">—</span>
+      </div>
+    </aside>
