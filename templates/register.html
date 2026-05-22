@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register — PGE Lahendong</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/static/css/main.css" />
+  </head>
+  <body
+    style="
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--bg);
+      padding: 20px;
+    "
+    python
+  >
+    <div
+      style="
+        background: #fff;
+        border-radius: 16px;
+        padding: 36px 36px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      "
+    >
+      <!-- Header -->
+      <div style="text-align: center; margin-bottom: 24px">
+        <img
+          src="/static/images/lahendong.png"
+          alt="Logo PGE"
+          style="width: 60px; margin-bottom: 10px"
+          onerror="this.style.display='none'"
+        />
+        <div
+          style="
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--mut);
+            text-transform: uppercase;
+          "
+        >
+          PT Pertamina Geothermal Energy
+        </div>
+        <div
+          style="
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--gd);
+            margin-top: 4px;
+          "
+        >
+          Daftar Akun Baru
+        </div>
+        <div style="font-size: 12px; color: var(--mut); margin-top: 4px">
+          Dashboard Monitoring Absensi — Area Lahendong
+        </div>
+      </div>
+
+      <!-- Alert -->
+      <div
+        id="err"
+        style="
+          display: none;
+          background: var(--dal);
+          color: var(--dan);
+          padding: 10px 13px;
+          border-radius: 8px;
+          font-size: 13px;
+          font-weight: 600;
+          margin-bottom: 14px;
+        "
+      ></div>
+      <div
+        id="suc"
+        style="
+          display: none;
+          background: #dcfce7;
+          color: #166534;
+          padding: 10px 13px;
+          border-radius: 8px;
+          font-size: 13px;
+          font-weight: 600;
+          margin-bottom: 14px;
+        "
+      ></div>
+
+      <!-- Form -->
+      <div style="display: flex; flex-direction: column; gap: 13px">
+        <!-- Nama Lengkap -->
+        <div>
+          <label
+            style="
+              font-size: 12px;
+              font-weight: 700;
+              color: var(--mut);
+              display: block;
+              margin-bottom: 5px;
+            "
+          >
+            NAMA LENGKAP
+          </label>
+          <input
+            id="nama"
+            type="text"
+            placeholder="Contoh: Budi Santoso"
+            style="
+              width: 100%;
+              padding: 10px 13px;
+              border: 1.5px solid var(--bor);
+              border-radius: 8px;
+              font-size: 14px;
+              font-family: inherit;
+              outline: none;
+              box-sizing: border-box;
+            "
+          />
+        </div>
+
+        <!-- Username -->
+        <div>
+          <label
+            style="
+              font-size: 12px;
+              font-weight: 700;
+              color: var(--mut);
+              display: block;
+              margin-bottom: 5px;
+            "
+          >
+            USERNAME
+          </label>
+          <input
+            id="username"
+            type="text"
+            placeholder="Contoh: budi.santoso"
+            style="
+              width: 100%;
+              padding: 10px 13px;
+              border: 1.5px solid var(--bor);
+              border-radius: 8px;
+              font-size: 14px;
+              font-family: inherit;
+              outline: none;
+              box-sizing: border-box;
+            "
+          />
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label
+            style="
+              font-size: 12px;
+              font-weight: 700;
+              color: var(--mut);
+              display: block;
+              margin-bottom: 5px;
+            "
+          >
+            PASSWORD
+            <span style="font-weight: 400; font-size: 11px"
+              >(minimal 6 karakter)</span
+            >
+          </label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Buat password"
+            style="
+              width: 100%;
+              padding: 10px 13px;
+              border: 1.5px solid var(--bor);
+              border-radius: 8px;
+              font-size: 14px;
+              font-family: inherit;
+              outline: none;
+              box-sizing: border-box;
+            "
+          />
+        </div>
+
+        <!-- Divisi -->
+        <div>
+          <label
+            style="
+              font-size: 12px;
+              font-weight: 700;
+              color: var(--mut);
+              display: block;
+              margin-bottom: 5px;
+            "
+          >
+            DIVISI
+          </label>
+          <select
+            id="divisi"
+            style="
+              width: 100%;
+              padding: 10px 13px;
+              border: 1.5px solid var(--bor);
+              border-radius: 8px;
+              font-size: 14px;
+              font-family: inherit;
+              outline: none;
+              background: #fff;
+              cursor: pointer;
+              box-sizing: border-box;
+            "
+          >
+            <option value="">-- Pilih Divisi --</option>
+            <option value="Operasi">Operasi</option>
+            <option value="Maintenance">Maintenance</option>
+            <option value="Business Support">Business Support</option>
+            <option value="HSSE">HSSE</option>
+            <option value="GPR">GPR</option>
+          </select>
+        </div>
+
+        <!-- Role -->
+        <div>
+          <label
+            style="
+              font-size: 12px;
+              font-weight: 700;
+              color: var(--mut);
+              display: block;
+              margin-bottom: 5px;
+            "
+          >
+            ROLE
+          </label>
+          <select
+            id="role"
+            style="
+              width: 100%;
+              padding: 10px 13px;
+              border: 1.5px solid var(--bor);
+              border-radius: 8px;
+              font-size: 14px;
+              font-family: inherit;
+              outline: none;
+              background: #fff;
+              cursor: pointer;
+              box-sizing: border-box;
+            "
+          >
+            <option value="user">Karyawan</option>
+            <option value="manager">Manager</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+
+        <!-- Kode Akses -->
+        <div>
+          <label
+            style="
+              font-size: 12px;
+              font-weight: 700;
+              color: var(--mut);
+              display: block;
+              margin-bottom: 5px;
+            "
+          >
+            KODE AKSES
+            <span style="font-weight: 400; font-size: 11px; color: var(--mut)">
+              — hubungi admin untuk mendapatkan kode
+            </span>
+          </label>
+          <input
+            id="kode"
+            type="password"
+            placeholder="Masukkan kode akses"
+            style="
+              width: 100%;
+              padding: 10px 13px;
+              border: 1.5px solid var(--bor);
+              border-radius: 8px;
+              font-size: 14px;
+              font-family: inherit;
+              outline: none;
+              box-sizing: border-box;
+            "
+            onkeydown="if(event.key==='Enter')doRegister()"
+          />
+        </div>
+
+        <!-- Tombol -->
+        <button
+          onclick="doRegister()"
+          id="btn-register"
+          style="
+            width: 100%;
+            padding: 11px;
+            background: var(--g);
+            color: #fff;
+            border: none;
+            border-radius: 9px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 4px;
+          "
+        >
+          Daftar Sekarang →
+        </button>
+
+        <!-- Link kembali -->
+        <div style="text-align: center; font-size: 13px; color: var(--mut)">
+          Sudah punya akun?
+          <a
+            href="/login"
+            style="color: var(--g); font-weight: 700; text-decoration: none"
+          >
+            Masuk di sini
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function doRegister() {
+        const err = document.getElementById("err");
+        const suc = document.getElementById("suc");
+        const btn = document.getElementById("btn-register");
+
+        err.style.display = "none";
+        suc.style.display = "none";
+
+        const nama = document.getElementById("nama").value.trim();
+        const username = document.getElementById("username").value.trim();
+        const password = document.getElementById("password").value;
+        const divisi = document.getElementById("divisi").value;
+        const role = document.getElementById("role").value;
+        const kode = document.getElementById("kode").value.trim();
+
+        // Validasi frontend
+        if (!nama || !username || !password || !divisi || !kode) {
+          err.textContent = "Semua field wajib diisi";
+          err.style.display = "block";
+          return;
+        }
+        if (password.length < 6) {
+          err.textContent = "Password minimal 6 karakter";
+          err.style.display = "block";
+          return;
+        }
+
+        btn.textContent = "Mendaftar...";
+        btn.disabled = true;
+
+        try {
+          const r = await fetch("/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              nama,
+              username,
+              password,
+              divisi,
+              role,
+              kode,
+            }),
+          });
+          const data = await r.json();
+
+          if (data.success) {
+            suc.textContent =
+              "✅ " + data.message + " — Mengalihkan ke halaman login...";
+            suc.style.display = "block";
+            // Reset form
+            ["nama", "username", "password", "kode"].forEach(
+              (id) => (document.getElementById(id).value = "")
+            );
+            setTimeout(() => (window.location.href = "/login"), 2000);
+          } else {
+            err.textContent = "❌ " + (data.error || "Pendaftaran gagal");
+            err.style.display = "block";
+          }
+        } catch (e) {
+          err.textContent = "❌ Gagal terhubung ke server";
+          err.style.display = "block";
+        } finally {
+          btn.textContent = "Daftar Sekarang →";
+          btn.disabled = false;
+        }
+      }
+    </script>
+  </body>
+</html>

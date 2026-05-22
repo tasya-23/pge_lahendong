@@ -8,6 +8,7 @@ from helpers import (load_absensi, load_master, filter_df,
 from middleware import login_required
 import os
 
+
 UPLOAD_FOLDER = "uploads"
 
 api_bp = Blueprint("api", __name__)
@@ -86,8 +87,9 @@ def api_filter_options():
 @api_bp.route("/api/summary")
 @login_required
 def api_summary():
-    df = load_absensi()
-    if df is None:
+    # 1. Load data penuh (df_full) untuk menghitung hari kerja asli
+    df_full = load_absensi()
+    if df_full is None:
         return jsonify({
             "total_hadir": 0, "total_terlambat": 0, "total_tidak_hadir": 0,
             "total_karyawan": 0, "hari_kerja": 0, "pct_hadir": 0,
@@ -95,32 +97,15 @@ def api_summary():
             "hadir": 0, "terlambat": 0, "tidak_hadir": 0
         })
 
-    df = filter_df(df, request.args)
+    # 2. Hitung hari kerja dari data PENUH (abaikan filter)
+    # Filter hari Senin-Jumat saja (dayofweek < 5)
+    tgl_full = pd.to_datetime(df_full["Tanggal"])
+    hari_kerja_full = tgl_full[tgl_full.dt.dayofweek < 5].nunique()
 
-    role   = session.get("role", "user")
-    nama   = session.get("nama", "")
-    divisi = session.get("divisi", "")
-
-    # Role user: hanya data diri sendiri
-    if role == "user":
-        if "Name" in df.columns and nama:
-            df = df[df["Name"].astype(str).str.lower() == nama.lower()]
-    # Role manager: hanya data divisinya
-    elif role == "manager":
-        if "Divisi" in df.columns and divisi:
-            df = df[df["Divisi"] == divisi]
-    # Role admin: semua data
-
-    if df.empty:
-        return jsonify({
-            "total_hadir": 0, "total_terlambat": 0, "total_tidak_hadir": 0,
-            "total_karyawan": 0, "hari_kerja": 0, "pct_hadir": 0,
-            "pct_terlambat": 0, "total_jam_kerja": 0,
-            "hadir": 0, "terlambat": 0, "tidak_hadir": 0
-        })
+    # 3. Filter data untuk perhitungan statistik lainnya
+    df = filter_df(df_full, request.args)
 
     total_karyawan   = df["Person ID"].nunique()
-    hari_kerja       = df["Tanggal"].nunique()
     hadir, terlambat = hitung_status(df)
     tidak_hadir      = hitung_tidak_hadir(df)
     total_absen      = hadir + terlambat + tidak_hadir
@@ -134,7 +119,7 @@ def api_summary():
         "total_terlambat":   terlambat,
         "total_tidak_hadir": tidak_hadir,
         "total_karyawan":    int(total_karyawan),
-        "hari_kerja":        int(hari_kerja),
+        "hari_kerja":        int(hari_kerja_full), # Menggunakan hasil perhitungan dari df_full
         "pct_hadir":         pct_hadir,
         "pct_terlambat":     pct_terlambat,
         "total_jam_kerja":   total_jam,
@@ -214,17 +199,6 @@ def api_chart_pie():
 
     df = filter_df(df, request.args)
 
-    role   = session.get("role", "user")
-    nama   = session.get("nama", "")
-    divisi = session.get("divisi", "")
-
-    if role == "user":
-        if "Name" in df.columns and nama:
-            df = df[df["Name"].astype(str).str.lower() == nama.lower()]
-    elif role == "manager":
-        if "Divisi" in df.columns and divisi:
-            df = df[df["Divisi"] == divisi]
-
     if df.empty:
         return jsonify({"labels": ["Hadir","Terlambat","Tidak Hadir"], "values": [0,0,0], "pct": [0,0,0], "total_karyawan": 0})
 
@@ -266,16 +240,6 @@ def api_chart_dept():
 
     # 🔥 Filter
     df = filter_df(df, request.args)
-
-    role   = session.get("role", "user")
-    divisi = session.get("divisi", "")
-
-    # User hanya lihat divisinya sendiri, bukan semua divisi
-    if role == "user":
-        return jsonify({"divisi": [], "hadir": [], "terlambat": [], "tidak_hadir": [], "pct_hadir": []})
-    elif role == "manager":
-        if "Divisi" in df.columns and divisi:
-            df = df[df["Divisi"] == divisi]
 
     if df.empty:
         return jsonify({
@@ -321,23 +285,17 @@ def api_chart_dept():
 def api_rekap():
     df = load_absensi()
     if df is None:
-        return jsonify([])
+        return jsonify({"data": []})
 
     df = filter_df(df, request.args)
 
-    role        = session.get("role", "user")
-    nama        = session.get("nama", "")
-    user_divisi = session.get("divisi", "")
+    # 🔥 optional: batasi berdasarkan divisi user (kalau bukan admin)
+    user_divisi = session.get("divisi")
+    role = session.get("role")
 
-    # User: hanya data diri sendiri
-    if role == "user":
-        if "Name" in df.columns and nama:
-            df = df[df["Name"].astype(str).str.lower() == nama.lower()]
-    # Manager: hanya data divisinya
-    elif role == "manager" and user_divisi:
+    if role != "admin" and user_divisi:
         if "Divisi" in df.columns:
             df = df[df["Divisi"] == user_divisi]
-    # Admin: semua data
 
     rows = []
     for pid, grp in df.groupby("Person ID"):
@@ -377,14 +335,7 @@ def api_ranking():
     df_master = load_master()  # ⬅️ ambil data master (untuk divisi)
 
     if df_absen is None or df_absen.empty:
-        return jsonify([])
-
-    role   = session.get("role", "user")
-    divisi = session.get("divisi", "")
-
-    # User tidak punya akses ke halaman ranking
-    if role == "user":
-        return jsonify([])
+        return jsonify({"data": []})
 
     # parameter top (default 10, aman dari error)
     try:
@@ -393,11 +344,6 @@ def api_ranking():
         top = 10
 
     df_absen = filter_df(df_absen, request.args)
-
-    # Manager hanya lihat ranking divisinya
-    if role == "manager" and divisi:
-        if "Divisi" in df_absen.columns:
-            df_absen = df_absen[df_absen["Divisi"] == divisi]
 
     rows = []
 
@@ -453,19 +399,10 @@ def api_detail(pid):
     if df is None:
         return jsonify({"error": "Tidak ada data"})
 
-    # Batasi akses berdasarkan role
-    role = session.get("role", "user")
-    nama = session.get("nama", "")
-
     # Filter per karyawan dulu
     df = df[df["Person ID"].astype(str) == str(pid)]
     if df.empty:
         return jsonify({"error": "Data tidak ditemukan"})
-
-    # User hanya boleh lihat data dirinya sendiri
-    if role == "user":
-        if "Name" not in df.columns or df["Name"].astype(str).str.lower().iloc[0] != nama.lower():
-            return jsonify({"error": "Akses ditolak"}), 403
 
     # Filter bulan/tahun dari request
     df = filter_df(df, request.args)
@@ -545,95 +482,19 @@ def api_detail(pid):
         },
         "detail": detail,
     })
-
-# ==============================
-# 📈 API TREND HARIAN — khusus role user
-# ==============================
-@api_bp.route("/api/trend-me")
-@login_required
-def api_trend_me():
-    import platform
-    df = load_absensi()
-    if df is None:
-        return jsonify([])
-
-    role   = session.get("role", "user")
-    nama   = session.get("nama", "")
-    divisi = session.get("divisi", "")
-
-    df = filter_df(df, request.args)
-
-    # Filter berdasarkan role
-    if role == "user" and nama and "Name" in df.columns:
-        df = df[df["Name"].astype(str).str.lower() == nama.lower()]
-    elif role == "manager" and divisi and "Divisi" in df.columns:
-        df = df[df["Divisi"] == divisi]
-
-    if df.empty:
-        return jsonify([])
-
-    HARI = ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]
-
-    checkin_mask  = df["Attendance Status"].astype(str).str.lower().str.contains(
-        "check-in|check in", na=False)
-    checkout_mask = df["Attendance Status"].astype(str).str.lower().str.contains(
-        "check-out|check out", na=False)
-
-    df_ci = df[checkin_mask]
-    df_co = df[checkout_mask]
-
-    first_in = (df_ci.groupby("Tanggal")["Time"].min()
-                if not df_ci.empty else pd.Series(dtype="datetime64[ns]"))
-    last_out = (df_co.groupby("Tanggal")["Time"].max()
-                if not df_co.empty else pd.Series(dtype="datetime64[ns]"))
-
-    batas_menit = JAM_MASUK_STANDAR * 60 + MENIT_TOLERANSI
-    semua_tgl   = sorted(df["Tanggal"].unique())
-    result      = []
-
-    for tgl in semua_tgl:
-        tgl_dt = pd.to_datetime(tgl)
-        hari   = HARI[tgl_dt.weekday()]
-
-        # Format tanggal aman di Windows maupun Linux
-        try:
-            tgl_fmt = tgl_dt.strftime("%-d %b")   # Linux
-        except ValueError:
-            tgl_fmt = tgl_dt.strftime("%#d %b")   # Windows
-        except Exception:
-            tgl_fmt = tgl_dt.strftime("%d %b").lstrip("0") or "1"
-
-        if tgl in first_in.index:
-            masuk_dt  = first_in[tgl]
-            jam_masuk = masuk_dt.strftime("%H:%M")
-            menit_val = masuk_dt.hour * 60 + masuk_dt.minute
-            jam_float = round(masuk_dt.hour + masuk_dt.minute / 60, 4)
-            status    = "Terlambat" if menit_val > batas_menit else "Hadir"
-        else:
-            jam_masuk = "-"
-            jam_float = None
-            status    = "Tidak Hadir"
-
-        if tgl in last_out.index:
-            jam_keluar = last_out[tgl].strftime("%H:%M")
-        else:
-            jam_keluar = "-"
-
-        jam_kerja = None
-        if tgl in first_in.index and tgl in last_out.index:
-            selisih = (last_out[tgl] - first_in[tgl]).total_seconds() / 3600
-            if JAM_MIN_KERJA <= selisih <= JAM_MAX_KERJA:
-                jam_kerja = round(selisih, 1)
-
-        result.append({
-            "tanggal":     str(tgl),
-            "tanggal_fmt": tgl_fmt,
-            "hari":        hari,
-            "jam_masuk":   jam_masuk,
-            "jam_keluar":  jam_keluar,
-            "jam_float":   jam_float,
-            "jam_kerja":   jam_kerja,
-            "status":      status,
-        })
-
-    return jsonify(result)
+# 2. LOAD DATA PENUH & DEBUGGING
+    df_full = load_absensi()
+    if df_full is not None:
+        # Debugging: Print informasi ke terminal/CMD
+        tgl_series = pd.to_datetime(df_full["Tanggal"], errors='coerce')
+        print(f"DEBUG: Total baris data: {len(df_full)}")
+        print(f"DEBUG: Tanggal unik (sebelum filter): {tgl_series.nunique()}")
+        print(f"DEBUG: Tanggal unik weekday: {tgl_series[tgl_series.dt.dayofweek < 5].nunique()}")
+        
+        # Jika ada tanggal yang tidak terbaca (NaT), ini akan muncul
+        print(f"DEBUG: Baris dengan tanggal invalid (NaT): {tgl_series.isna().sum()}")
+        
+        # Simpan ke variabel
+        hari_kerja_full = tgl_series[tgl_series.dt.dayofweek < 5].nunique()
+    else:
+        hari_kerja_full = 0

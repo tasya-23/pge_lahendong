@@ -19,6 +19,9 @@
     </div>
     <div class="toast" id="toast"></div>
 
+    <!-- Overlay gelap saat sidebar terbuka di mobile -->
+    <div class="sb-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
+
     {% include "partials/sidebar.html" %}
 
     <div class="main">
@@ -29,6 +32,8 @@
 
     {% include "partials/modal.html" %}
 
+
+
     <!-- JavaScript — urutan penting -->
     <script src="/static/js/core.js"></script>
     <script src="/static/js/upload.js"></script>
@@ -37,6 +42,61 @@
     <script src="/static/js/rekap.js"></script>
     <script src="/static/js/ranking.js"></script>
     <script src="/static/js/modal.js"></script>
+    <script src="/static/js/ganti_password.js"></script>
     <script src="/static/js/init.js"></script>
+  <script>
+    // ── Mobile sidebar toggle ──────────────────────────
+    function openSidebar() {
+      const sb = document.getElementById("sb");
+      const ov = document.getElementById("sb-overlay");
+      if (!sb || !ov) return;
+      sb.classList.add("open");
+      ov.classList.add("show");
+      document.body.style.overflow = "hidden";
+    }
+    function closeSidebar() {
+      const sb = document.getElementById("sb");
+      const ov = document.getElementById("sb-overlay");
+      if (!sb || !ov) return;
+      sb.classList.remove("open");
+      ov.classList.remove("show");
+      document.body.style.overflow = "";
+    }
+    // Tutup sidebar saat klik menu di mobile
+    document.querySelectorAll(".ni").forEach(btn => {
+      btn.addEventListener("click", () => {
+        if (window.innerWidth <= 900) closeSidebar();
+      });
+    });
+
+    // ── Sync bottom nav active state ──────────────────
+    const _origSwitchPage = typeof switchPage === "function" ? switchPage : null;
+    // Override switchPage untuk sync bottom nav
+    // (dipanggil setelah core.js load via DOMContentLoaded)
+    document.addEventListener("DOMContentLoaded", () => {
+      const origSwitch = window.switchPage;
+      if (origSwitch) {
+        window.switchPage = function(page) {
+          origSwitch(page);
+          if (window.innerWidth <= 900) closeSidebar();
+        };
+      }
+    });
+
+    function syncBottomNav(page) {
+      // Bottom nav sudah dihapus — fungsi ini dikosongkan agar tidak error
+    }
+
+    // ── Swipe gesture untuk tutup sidebar ─────────────
+    let touchStartX = 0;
+    document.addEventListener("touchstart", e => {
+      touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    document.addEventListener("touchend", e => {
+      const diff = touchStartX - e.changedTouches[0].clientX;
+      if (diff > 60) closeSidebar(); // swipe kiri → tutup
+      if (diff < -60 && touchStartX < 30) openSidebar(); // swipe kanan dari tepi → buka
+    }, { passive: true });
+  </script>
   </body>
 </html>

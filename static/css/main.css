@@ -34,6 +34,7 @@ body {
   min-height: 100vh;
   display: flex;
   font-size: 14px;
+  overflow-x: hidden;
 }
 
 /* ── Sidebar ── */
@@ -173,6 +174,8 @@ body {
 
 /* ── Main ── */
 .main {
+  overflow-x: hidden;
+  min-width: 0;
   margin-left: var(--sw);
   flex: 1;
   display: flex;
@@ -256,6 +259,9 @@ body {
 
 /* ── Pages ── */
 .page {
+  box-sizing: border-box;
+  width: 100%;
+  overflow-x: hidden;
   display: none;
   padding: 26px 26px 36px;
 }
@@ -476,7 +482,7 @@ body {
 /* Stat cards */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 13px;
   margin-bottom: 18px;
 }
@@ -1150,4 +1156,373 @@ tbody td {
 .card-rekap .dt th:first-child {
   min-width: 180px;
   white-space: normal;
+}
+
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE MOBILE — PGE Lahendong Dashboard
+   Breakpoints: tablet ≤ 900px | mobile ≤ 600px
+   ══════════════════════════════════════════════════════════ */
+
+/* ── Overlay gelap saat sidebar terbuka di mobile ── */
+.sb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 190;
+  backdrop-filter: blur(2px);
+}
+.sb-overlay.show {
+  display: block;
+}
+
+/* ── Tombol hamburger di topbar ── */
+.btn-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  color: var(--t2);
+  transition: background 0.15s;
+}
+.btn-hamburger:hover {
+  background: var(--bg);
+}
+.btn-hamburger svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+/* ════════════════════════
+   TABLET ≤ 900px
+   ════════════════════════ */
+@media (max-width: 900px) {
+
+  /* Sidebar slide in/out */
+  .sb {
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 200;
+    box-shadow: none;
+  }
+  .sb.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.18);
+  }
+
+  /* Main tanpa margin kiri */
+  .main {
+    margin-left: 0 !important;
+  }
+
+  /* Topbar: tampilkan hamburger */
+  .tb {
+    padding: 0 16px;
+  }
+  .btn-hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 8px;
+  }
+
+  /* Sembunyikan label breadcrumb panjang */
+  .tb-l {
+    font-size: 11px;
+  }
+
+  /* Stat cards: 3 kolom di tablet */
+  .stats-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  /* two-col: satu kolom */
+  .two-col {
+    grid-template-columns: 1fr;
+  }
+
+  /* three-col: satu kolom */
+  .three-col,
+  .three-col-rekap {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* period-bar: stack vertikal */
+  .period-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .period-bar h1 {
+    font-size: 17px;
+  }
+
+  /* filter-bar: wrap dengan gap lebih kecil */
+  .filter-bar {
+    gap: 8px;
+    padding: 10px 13px;
+  }
+  .fdiv {
+    display: none;
+  }
+
+  /* Page padding lebih kecil */
+  .page {
+    padding: 16px 14px 32px;
+  }
+
+  /* Manager insight grid: 2x2 */
+  #manager-insight-section .cb[style*="grid-template-columns:repeat(4"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ════════════════════════
+   MOBILE ≤ 600px
+   ════════════════════════ */
+@media (max-width: 600px) {
+
+  /* Stat cards: 2 kolom di HP */
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .stats-row .sc:last-child {
+    grid-column: 1 / -1;
+  }
+  .sc {
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  .sc-val {
+    font-size: 18px;
+    word-break: break-all;
+  }
+  .sc-lbl {
+    font-size: 9px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sc-sub {
+    font-size: 9.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .sc-val {
+    font-size: 19px;
+  }
+  .sc-lbl {
+    font-size: 9px;
+  }
+  .sc-sub {
+    font-size: 10px;
+  }
+  .sc {
+    padding: 11px 12px;
+  }
+
+  /* Topbar */
+  .tb {
+    height: 50px;
+    padding: 0 12px;
+  }
+  .tb-l {
+    display: none; /* sembunyikan breadcrumb di HP kecil */
+  }
+
+  /* Tombol export — hanya icon */
+  .btn-ghost span,
+  .btn-green span {
+    display: none;
+  }
+  #btn-excel .export-label,
+  #btn-pdf .export-label {
+    display: none;
+  }
+
+  /* Page padding minimal */
+  .page {
+    padding: 12px 10px 28px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  /* Period bar buttons wrap di mobile */
+  .period-btns {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .period-bar {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Period bar */
+  .period-bar h1 {
+    font-size: 15px;
+  }
+  .period-bar p {
+    font-size: 11px;
+  }
+
+  /* Filter bar: wrap di mobile */
+  .filter-bar {
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .filter-bar::-webkit-scrollbar {
+    height: 3px;
+  }
+  .filter-bar::-webkit-scrollbar-thumb {
+    background: var(--bor);
+    border-radius: 99px;
+  }
+  .fg select {
+    font-size: 12px;
+    padding: 5px 22px 5px 8px;
+  }
+
+  /* Chart height lebih kecil */
+  .chart-wrap {
+    height: 180px;
+  }
+
+  /* Tabel scroll horizontal */
+  .tbl-wrap {
+    max-height: 300px;
+  }
+  tbody td,
+  thead th {
+    font-size: 11px;
+    padding: 7px 8px;
+  }
+
+  /* Modal full screen di HP */
+  .modal-bg {
+    padding: 0;
+    align-items: flex-end;
+  }
+  .modal {
+    border-radius: 16px 16px 0 0;
+    max-height: 92vh;
+  }
+
+  /* Jam kerja card: stack */
+  .jam-card {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  #sv-jam {
+    font-size: 18px;
+  }
+
+  /* User trend: chart lebih kecil */
+  #chartTrend,
+  #chartJamMasuk {
+    height: 140px;
+  }
+
+  /* Sidebar lebih lebar sedikit di HP kecil */
+  .sb {
+    width: 82vw;
+    max-width: 300px;
+  }
+
+  /* Ranking bar */
+  .ri-bar {
+    display: none;
+  }
+}
+
+
+/* ════════════════════════
+   iPAD / TABLET 600–900px
+   ════════════════════════ */
+@media (min-width: 601px) and (max-width: 900px) {
+  .stats-row {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .sc-val {
+    font-size: 22px;
+  }
+}
+/* ════════════════════════
+   BOTTOM NAV BAR (HP)
+   Navigasi bawah layar seperti aplikasi mobile
+   ════════════════════════ */
+.bottom-nav {
+  display: none !important;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--wh);
+  border-top: 1px solid var(--bor);
+  z-index: 150;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.07);
+}
+.bottom-nav-inner {
+  display: flex;
+  height: 100%;
+  align-items: stretch;
+}
+.bn-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--mut);
+  font-size: 10px;
+  font-weight: 600;
+  font-family: inherit;
+  transition: color 0.15s, background 0.15s;
+  padding: 6px 4px;
+  border-radius: 0;
+  position: relative;
+}
+.bn-item svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+.bn-item.active {
+  color: var(--g);
+}
+.bn-item.active::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 25%;
+  width: 50%;
+  height: 3px;
+  background: var(--g);
+  border-radius: 0 0 4px 4px;
+}
+.bn-item:active {
+  background: var(--gp);
+}
+
+@media (max-width: 900px) {
+  .bottom-nav {
+    display: none !important;
+  }
 }

@@ -154,6 +154,39 @@
     </div>
   </div>
 
+  <!-- ══ SECTION KHUSUS MANAGER ══ -->
+  <div id="manager-insight-section" style="display:none">
+
+    <!-- Top Terlambat + Top Absen side by side -->
+    <div class="two-col" style="margin-bottom:16px">
+
+      <!-- Top 5 Paling Sering Terlambat -->
+      <div class="card">
+        <div class="ch">
+          <h3>⏰ Top 5 Paling Sering Terlambat</h3>
+          <span class="cb-badge" style="background:var(--acl);color:#a16207">bulan ini</span>
+        </div>
+        <div style="padding:8px 0" id="mg-top-terlambat">
+          <div class="empty"><span class="ico">⏳</span>Memuat...</div>
+        </div>
+      </div>
+
+      <!-- Top 5 Absensi Terburuk -->
+      <div class="card">
+        <div class="ch">
+          <h3>❌ Top 5 Absensi Terburuk</h3>
+          <span class="cb-badge" style="background:var(--dal);color:var(--dan)">bulan ini</span>
+        </div>
+        <div style="padding:8px 0" id="mg-top-absen">
+          <div class="empty"><span class="ico">⏳</span>Memuat...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <!-- /manager-insight-section -->
+
+
   <!-- ══ SECTION KHUSUS USER — Trend Kehadiran Pribadi ══ -->
   <!-- Ditampilkan hanya untuk role user via JS (applyUserFilter) -->
   <div id="user-trend-section" style="display:none">
@@ -378,7 +411,7 @@
       </div>
     </div>
 
-    <div class="card">
+    <div class="card" id="grafik-per-divisi-card">
       <div class="ch">
         <h3>Grafik per Divisi</h3>
         <span class="cb-badge" id="cb-dept">—</span>

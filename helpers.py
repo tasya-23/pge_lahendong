@@ -212,3 +212,13 @@ def hitung_jam_kerja(df):
         total_jam = 0.0
 
     return round(float(total_jam), 1)
+
+def hitung_total_hari_kerja_unik(df_full):
+    """Menghitung jumlah tanggal unik (Senin-Jumat) dari data penuh."""
+    if df_full is None or df_full.empty:
+        return 0
+    
+    # Ambil kolom tanggal, ubah ke datetime, filter weekday
+    dates = pd.to_datetime(df_full["Tanggal"].unique())
+    workdays = [t for t in dates if t.weekday() < 5]
+    return len(workdays)

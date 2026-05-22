@@ -7,9 +7,13 @@ async function loadDashboard() {
     loadDeptChart(),
     loadDeptTable(),
   ]);
-  // Kalau role user, load juga trend harian
+  // Kalau role user, load trend harian
   if (typeof userRole !== "undefined" && userRole === "user") {
     await loadUserTrend();
+  }
+  // Kalau role manager, load insight manager
+  if (typeof userRole !== "undefined" && userRole === "manager") {
+    await loadManagerInsight();
   }
 }
 
@@ -32,13 +36,21 @@ async function loadSummary() {
       if (el) el.textContent = val;
     };
 
-    set("sv-hadir-pct",  (d.pct_hadir     || 0) + "% dari total absensi");
-    set("sv-lambat-pct", (d.pct_terlambat || 0) + "% dari total absensi");
+    // Sub-label pakai total_slot (karyawan × hari kerja) = akurat
+    const slot    = d.total_slot || 1;
+    const pctH    = d.pct_hadir     || 0;
+    const pctL    = d.pct_terlambat || 0;
+    const pctT    = d.pct_tidak     || 0;
 
-    // tidak hadir pct
-    const grand = (d.total_hadir || 0) + (d.total_terlambat || 0) + (d.total_tidak_hadir || 0);
-    const pctT  = grand > 0 ? Math.round((d.total_tidak_hadir / grand) * 1000) / 10 : 0;
-    set("sv-tidak-sub", pctT + "% dari total absensi");
+    set("sv-hadir-pct",  pctH + "% tingkat kehadiran");
+    set("sv-lambat-pct", pctL + "% dari total slot");
+    set("sv-tidak-sub",  pctT + "% dari total slot");
+
+    // Update label card agar lebih informatif
+    const lblHadir = document.querySelector(".sc.p .sc-lbl");
+    const lblHk    = document.querySelector(".sc.b .sc-sub");
+    if (lblHadir) lblHadir.textContent = "Tingkat Kehadiran";
+    if (lblHk)    lblHk.textContent    = slot + " total slot";
 
     // Total Jam
     const jam = d.total_jam_kerja || 0;
@@ -494,4 +506,89 @@ function showUserDashboard() {
   // Ubah judul
   const h1 = document.querySelector("#page-dash h1");
   if (h1) h1.textContent = "Data Kehadiran Saya";
+}
+
+// =======================
+// TOGGLE TAMPILAN MANAGER
+// Dipanggil dari init.js setelah role diketahui
+// =======================
+function showManagerDashboard() {
+  // Tampilkan section insight manager
+  const ms = document.getElementById("manager-insight-section");
+  if (ms) ms.style.display = "";
+
+  // Sembunyikan grafik per divisi (tidak informatif untuk manager)
+  const gpdCard = document.getElementById("grafik-per-divisi-card");
+  if (gpdCard) gpdCard.style.display = "none";
+
+  // Perlebar rekap per divisi mengisi ruang penuh
+  const deptRow = document.getElementById("admin-dept-row");
+  if (deptRow) {
+    deptRow.style.gridTemplateColumns = "1fr";
+  }
+}
+
+// =======================
+// LOAD MANAGER INSIGHT
+// Top terlambat, top absen, ringkasan harian
+// =======================
+async function loadManagerInsight() {
+  try {
+    const d = await safeFetch("/api/manager-insight?" + getParams());
+    if (!d || d.error) return;
+
+    // ── Ringkasan harian ──────────────────────────────────
+    const rh = d.ringkasan_harian || {};
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+    set("mg-tanggal",    rh.tanggal        || "—");
+    set("mg-hadir",      rh.hadir_hari     ?? "—");
+    set("mg-absen",      rh.tidak_hadir_hari ?? "—");
+    set("mg-pct-hadir",  (rh.pct_hadir     ?? 0) + "%");
+    set("mg-pct-tepat",  (rh.pct_tepat     ?? 0) + "%");
+
+    // ── Render list item ──────────────────────────────────
+    function renderRankList(elId, data, key, color, unit, emptyMsg) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      if (!data || !data.length) {
+        el.innerHTML = `<div style="padding:20px;text-align:center;color:var(--mut);font-size:13px">${emptyMsg}</div>`;
+        return;
+      }
+      el.innerHTML = data.map((r, i) => {
+        const dc = { "Operasi":"#1a5c3a","Maintenance":"#d97706","Business Support":"#2563eb","HSSE":"#dc3545","GPR":"#7c3aed" }[r.divisi] || "#6b7280";
+        const medals = ["🥇","🥈","🥉"];
+        return `<div style="display:flex;align-items:center;gap:10px;padding:9px 17px;border-bottom:1px solid var(--bor)">
+          <div style="width:26px;height:26px;border-radius:7px;background:${color}18;display:grid;place-items:center;
+                      font-size:13px;font-weight:800;color:${color};flex-shrink:0;font-family:'DM Mono',monospace">
+            ${i < 3 ? medals[i] : r[key]}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escapeHTML(r.nama)}</div>
+            <div style="font-size:11px;color:var(--mut);margin-top:1px">
+              <span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:${dc};margin-right:3px;vertical-align:middle"></span>
+              ${escapeHTML(r.divisi)}
+            </div>
+          </div>
+          <div style="font-size:16px;font-weight:800;font-family:'DM Mono',monospace;color:${color};text-align:right">
+            ${r[key]}<span style="font-size:10px;font-weight:600;color:var(--mut);display:block;text-align:center">${unit}</span>
+          </div>
+        </div>`;
+      }).join("");
+    }
+
+    renderRankList(
+      "mg-top-terlambat", d.top_terlambat,
+      "terlambat", "#f0a500", "kali",
+      "✅ Tidak ada yang terlambat bulan ini"
+    );
+    renderRankList(
+      "mg-top-absen", d.top_absen,
+      "tidak_hadir", "#dc3545", "hari",
+      "✅ Semua karyawan hadir bulan ini"
+    );
+
+  } catch (e) {
+    console.error("loadManagerInsight error:", e);
+  }
 }

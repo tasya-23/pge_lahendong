@@ -41,7 +41,11 @@
         if (el) el.style.display = "none";
       });
     }
-
+    if (userRole === "manager") {
+      if (typeof showManagerDashboard === "function") {
+        showManagerDashboard();
+      }
+    }
     // Cek apakah ada data
     const st = await (await fetch("/api/file-status")).json();
 
